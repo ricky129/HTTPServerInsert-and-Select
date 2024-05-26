@@ -3,42 +3,44 @@ import java.net.*;
 import java.sql.*;
 
 public class httpserverinsert {
-	
-    public static void main(String[] args) throws Exception {
-		
-        int port = 8080;
-		
+
+	public static void main(String[] args) throws Exception {
+
+		int port = 80;
+
 		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/injection", "root", "TZ9Mdu.xekb(");
-			
-        ServerSocket serverSocket = new ServerSocket(port);
-        System.out.println("Server avviato sulla porta " + port + " ...");
+		Connection DBConn = DriverManager.getConnection("jdbc:mysql://192.168.1.17/injection", "root", ";2=BRhi*LoRI");
 
-        while (true) {
-            Socket clientSocket = serverSocket.accept();
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+		ServerSocket serverSocket = new ServerSocket(port);
+		System.out.println("Server avviato sulla porta " + port + " ...");
 
-            // Leggi la richiesta inviata dal client
-            StringBuilder request = new StringBuilder();
-            String line;
-            while ((line = in.readLine()) != null && !line.isEmpty()) {
-                request.append(line).append("\n");
-            }
+		while (true) {
+			Socket clientSocket = serverSocket.accept();
+			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 
-            // Se la richiesta è una richiesta POST, visualizza il testo inserito dall'utente
-            if (request.toString().contains("POST")) {
-				
-	            System.out.println("Richiesta del client:");
-                System.out.println(request.toString());
-                int contentLengthIndex = request.indexOf("Content-Length:");
-                int contentLength = Integer.parseInt(request.substring(contentLengthIndex + 16, request.indexOf("\n", contentLengthIndex)));
-                StringBuilder requestBody = new StringBuilder();
-                for (int i = 0; i < contentLength; i++) {
-                    requestBody.append((char) in.read());
-                }
-                String userInput = requestBody.toString();
-                System.out.println("Testo inserito dall'utente: " + userInput);
+			// Leggi la richiesta inviata dal client
+			StringBuilder request = new StringBuilder();
+			String line;
+			while ((line = in.readLine()) != null && !line.isEmpty()) {
+				request.append(line).append("\n");
+			}
+
+			// Se la richiesta è una richiesta POST, visualizza il testo inserito
+			// dall'utente
+			if (request.toString().contains("POST")) {
+
+				System.out.println("Richiesta del client:");
+				System.out.println(request.toString());
+				int contentLengthIndex = request.indexOf("Content-Length:");
+				int contentLength = Integer.parseInt(
+						request.substring(contentLengthIndex + 16, request.indexOf("\n", contentLengthIndex)));
+				StringBuilder requestBody = new StringBuilder();
+				for (int i = 0; i < contentLength; i++) {
+					requestBody.append((char) in.read());
+				}
+				String userInput = requestBody.toString();
+				System.out.println("Testo inserito dall'utente: " + userInput);
 				String[] parts = userInput.split("&");
 
 				String username = "";
@@ -56,19 +58,19 @@ public class httpserverinsert {
 						}
 					}
 				}
-                System.out.println("username = "+username);				
-				System.out.println("password = "+password);
-				
-				String query = "INSERT INTO users (username, password) VALUES ('"+username+"','"+password+"');";
-				Statement stmt = conn.createStatement();
+				System.out.println("username = " + username);
+				System.out.println("password = " + password);
+
+				String query = "INSERT INTO users (username, password) VALUES ('" + username + "','" + password + "');";
+				Statement stmt = DBConn.createStatement();
 				System.out.println(query);
 				stmt.execute(query);
 				stmt.close();
-				
+
 				out.println("HTTP/1.1 200 OK");
 				out.println("Content-Type: text/html");
 				out.println("\r\n");
-     			out.println("<!DOCTYPE html>");
+				out.println("<!DOCTYPE html>");
 				out.println("<html lang=\"en\">");
 				out.println("<head>");
 				out.println("    <meta charset=\"UTF-8\">");
@@ -80,19 +82,19 @@ public class httpserverinsert {
 				out.println("        width: 100px; /* Larghezza fissa per le etichette */");
 				out.println("        text-align: right; /* Allineamento del testo a destra */");
 				out.println("    }");
-				out.println("</style>");				
+				out.println("</style>");
 				out.println("</head>");
 				out.println("<body>");
 				out.println("    <h1>Registrazione eseguita con successo</h1>");
 				out.println("    <label>User:</label><br>");
-				out.println("    <label>"+username+"</label><br><br>");
+				out.println("    <label>" + username + "</label><br><br>");
 				out.println("    <label>Password:</label><br>");
-				out.println("    <label>"+password+"</label><br><br>");
+				out.println("    <label>" + password + "</label><br><br>");
 				out.println("</body>");
-				out.println("</html>");				
-				
-            }else{
-				
+				out.println("</html>");
+
+			} else {
+
 				out.println("HTTP/1.1 200 OK");
 				out.println("Content-Type: text/html");
 				out.println("\r\n");
@@ -110,24 +112,26 @@ public class httpserverinsert {
 				out.println("        display: inline-block;");
 				out.println("        width: 200px; /* Larghezza fissa per gli input */");
 				out.println("    }");
-				out.println("</style>");			
+				out.println("</style>");
 				out.println("</head>");
 				out.println("<body>");
 				out.println("<h1>Form di inserimento</h1>");
 				out.println("<form method=\"post\">");
 				out.println("<label for=\"username\">Nome Utente:</label>");
-				out.println("<pre><input type=\"text\" id=\"username\" name=\"username\" accept-charset=\"UTF-8\"></pre><br><br>");
+				out.println(
+						"<pre><input type=\"text\" id=\"username\" name=\"username\" accept-charset=\"UTF-8\"></pre><br><br>");
 				out.println("<label for=\"password\">Password:</label>");
-				out.println("<pre><input type=\"text\" id=\"password\" name=\"password\" accept-charset=\"UTF-8\"></pre><br><br>");
+				out.println(
+						"<pre><input type=\"text\" id=\"password\" name=\"password\" accept-charset=\"UTF-8\"></pre><br><br>");
 				out.println("<input type=\"submit\" value=\"Invia\">");
 				out.println("</form>");
 				out.println("</body>");
 				out.println("</html>");
 			}
-			
-            out.close();
-            in.close();
-            clientSocket.close();
-        }
-    }
+
+			out.close();
+			in.close();
+			clientSocket.close();
+		}
+	}
 }

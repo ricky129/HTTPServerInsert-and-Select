@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: httpserverinsert
-Class-Path: mysql-connector-j-8.0.32.jar

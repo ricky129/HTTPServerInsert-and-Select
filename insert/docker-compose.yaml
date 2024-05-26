@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+    httpserverinsert:
+       image: httpserverinsert
+       ports:
+        - "4000:80"

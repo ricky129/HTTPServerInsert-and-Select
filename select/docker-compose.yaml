@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+    httpserverselect:
+       image: httpserverselect
+       ports:
+        - "4000:80"
